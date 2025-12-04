@@ -19,6 +19,14 @@ export default function App() {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   };
 
+  // Tela de boas-vindas
+  const [showWelcome, setShowWelcome] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowWelcome(false), 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
   const [key, setKey] = useState(todayKey());
   const [count, setCount] = useState(0);
   const [totalMl, setTotalMl] = useState(0);
@@ -27,7 +35,7 @@ export default function App() {
   const [customMl, setCustomMl] = useState("");
   const [goalInput, setGoalInput] = useState("");
 
-  // Fake localStorage for Snack
+  // Fake localStorage para o Snack
   const store = global.store || (global.store = {});
   const getItem = (k) => store[k] || null;
   const setItem = (k, v) => (store[k] = v);
@@ -87,9 +95,7 @@ export default function App() {
     ]);
   };
 
-  // ----------------------
-  //   LEMBRETES CORRIGIDOS
-  // ----------------------
+  // Lembretes
   const enableReminders = async () => {
     const { status } = await Notifications.requestPermissionsAsync();
     if (status !== "granted") {
@@ -97,7 +103,7 @@ export default function App() {
       return;
     }
 
-    const mins = 60; // valor fixo (Snack não aceita Alert.prompt)
+    const mins = 60;
 
     Alert.alert(
       "Lembretes",
@@ -131,11 +137,57 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // ================================
+  //      TELA DE BOAS-VINDAS
+  // ================================
+  if (showWelcome) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#0ea5a1",
+        }}
+      >
+        <Text style={{ fontSize: 30, color: "white", fontWeight: "700", marginBottom: 20 }}>
+          Bem-vindo 💧
+        </Text>
+
+        <TouchableOpacity
+          onPress={() => setShowWelcome(false)}
+          style={{
+            backgroundColor: "white",
+            paddingVertical: 12,
+            paddingHorizontal: 28,
+            borderRadius: 10,
+          }}
+        >
+          <Text style={{ fontSize: 18, color: "#0ea5a1", fontWeight: "600" }}>Entrar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // ================================
+  //      APLICATIVO PRINCIPAL
+  // ================================
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#f4fbff", padding: 16 }}>
-      <View style={{ backgroundColor: "#fff", padding: 20, borderRadius: 16, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 6 }}>
+      <View
+        style={{
+          backgroundColor: "#fff",
+          padding: 20,
+          borderRadius: 16,
+          shadowColor: "#000",
+          shadowOpacity: 0.1,
+          shadowRadius: 6,
+        }}
+      >
         <Text style={{ fontSize: 22, fontWeight: "700" }}>Lembrete de Hidratação</Text>
-        <Text style={{ color: "#6b7280", marginBottom: 10 }}>Clique para registrar cada vez que beber água</Text>
+        <Text style={{ color: "#6b7280", marginBottom: 10 }}>
+          Clique para registrar cada vez que beber água
+        </Text>
         <Text style={{ fontSize: 14 }}>Data: {key}</Text>
 
         {/* Stats */}
@@ -147,7 +199,15 @@ export default function App() {
 
           <View style={{ backgroundColor: "#f0ffff", padding: 14, borderRadius: 12, marginBottom: 10 }}>
             <Text style={{ color: "#6b7280" }}>Total (ml)</Text>
-            <Text style={{ fontSize: 32, fontWeight: "bold", color: totalMl >= goal ? "green" : "black" }}>{totalMl}</Text>
+            <Text
+              style={{
+                fontSize: 32,
+                fontWeight: "bold",
+                color: totalMl >= goal ? "green" : "black",
+              }}
+            >
+              {totalMl}
+            </Text>
           </View>
 
           <View style={{ backgroundColor: "#f0ffff", padding: 14, borderRadius: 12, marginBottom: 10 }}>
@@ -157,15 +217,37 @@ export default function App() {
         </View>
 
         {/* Buttons */}
-        <TouchableOpacity onPress={() => addEntry(200)} style={{ backgroundColor: "#0ea5a1", padding: 12, borderRadius: 10, marginTop: 10 }}>
-          <Text style={{ textAlign: "center", color: "white", fontWeight: "600" }}>Registrar 200 ml</Text>
+        <TouchableOpacity
+          onPress={() => addEntry(200)}
+          style={{ backgroundColor: "#0ea5a1", padding: 12, borderRadius: 10, marginTop: 10 }}
+        >
+          <Text style={{ textAlign: "center", color: "white", fontWeight: "600" }}>
+            Registrar 200 ml
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => addEntry(250)} style={{ borderWidth: 2, borderColor: "#0ea5a10D", padding: 12, borderRadius: 10, marginTop: 10 }}>
-          <Text style={{ textAlign: "center", color: "#0ea5a1", fontWeight: "600" }}>Adicionar 250 ml</Text>
+        <TouchableOpacity
+          onPress={() => addEntry(250)}
+          style={{
+            borderWidth: 2,
+            borderColor: "#0ea5a10D",
+            padding: 12,
+            borderRadius: 10,
+            marginTop: 10,
+          }}
+        >
+          <Text style={{ textAlign: "center", color: "#0ea5a1", fontWeight: "600" }}>
+            Adicionar 250 ml
+          </Text>
         </TouchableOpacity>
 
-        <TextInput placeholder="ml personalizado" keyboardType="numeric" value={customMl} onChangeText={setCustomMl} style={{ borderWidth: 1, borderRadius: 10, padding: 10, marginTop: 10 }} />
+        <TextInput
+          placeholder="ml personalizado"
+          keyboardType="numeric"
+          value={customMl}
+          onChangeText={setCustomMl}
+          style={{ borderWidth: 1, borderRadius: 10, padding: 10, marginTop: 10 }}
+        />
 
         <TouchableOpacity
           onPress={() => {
@@ -175,12 +257,26 @@ export default function App() {
               setCustomMl("");
             }
           }}
-          style={{ borderWidth: 2, borderColor: "#0ea5a10D", padding: 12, borderRadius: 10, marginTop: 10 }}
+          style={{
+            borderWidth: 2,
+            borderColor: "#0ea5a10D",
+            padding: 12,
+            borderRadius: 10,
+            marginTop: 10,
+          }}
         >
-          <Text style={{ textAlign: "center", color: "#0ea5a1", fontWeight: "600" }}>Adicionar</Text>
+          <Text style={{ textAlign: "center", color: "#0ea5a1", fontWeight: "600" }}>
+            Adicionar
+          </Text>
         </TouchableOpacity>
 
-        <TextInput placeholder="Nova meta (ml)" keyboardType="numeric" value={goalInput} onChangeText={setGoalInput} style={{ borderWidth: 1, borderRadius: 10, padding: 10, marginTop: 10 }} />
+        <TextInput
+          placeholder="Nova meta (ml)"
+          keyboardType="numeric"
+          value={goalInput}
+          onChangeText={setGoalInput}
+          style={{ borderWidth: 1, borderRadius: 10, padding: 10, marginTop: 10 }}
+        />
 
         <TouchableOpacity
           onPress={() => {
@@ -193,24 +289,62 @@ export default function App() {
               setGoalInput("");
             }
           }}
-          style={{ borderWidth: 2, borderColor: "#0ea5a10D", padding: 12, borderRadius: 10, marginTop: 10 }}
+          style={{
+            borderWidth: 2,
+            borderColor: "#0ea5a10D",
+            padding: 12,
+            borderRadius: 10,
+            marginTop: 10,
+          }}
         >
-          <Text style={{ textAlign: "center", color: "#0ea5a1", fontWeight: "600" }}>Salvar meta</Text>
+          <Text style={{ textAlign: "center", color: "#0ea5a1", fontWeight: "600" }}>
+            Salvar meta
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={undoLast} style={{ borderWidth: 2, borderColor: "#999", padding: 12, borderRadius: 10, marginTop: 10 }}>
+        <TouchableOpacity
+          onPress={undoLast}
+          style={{
+            borderWidth: 2,
+            borderColor: "#999",
+            padding: 12,
+            borderRadius: 10,
+            marginTop: 10,
+          }}
+        >
           <Text style={{ textAlign: "center", fontWeight: "600" }}>Desfazer último</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={resetToday} style={{ borderWidth: 2, borderColor: "#999", padding: 12, borderRadius: 10, marginTop: 10 }}>
+        <TouchableOpacity
+          onPress={resetToday}
+          style={{
+            borderWidth: 2,
+            borderColor: "#999",
+            padding: 12,
+            borderRadius: 10,
+            marginTop: 10,
+          }}
+        >
           <Text style={{ textAlign: "center", fontWeight: "600" }}>Resetar dia</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={enableReminders} style={{ borderWidth: 2, borderColor: "#0ea5a1", padding: 12, borderRadius: 10, marginTop: 10 }}>
-          <Text style={{ textAlign: "center", color: "#0ea5a1", fontWeight: "600" }}>Ativar lembretes</Text>
+        <TouchableOpacity
+          onPress={enableReminders}
+          style={{
+            borderWidth: 2,
+            borderColor: "#0ea5a1",
+            padding: 12,
+            borderRadius: 10,
+            marginTop: 10,
+          }}
+        >
+          <Text style={{ textAlign: "center", color: "#0ea5a1", fontWeight: "600" }}>
+            Ativar lembretes
+          </Text>
         </TouchableOpacity>
 
         <Text style={{ marginTop: 20, color: "#6b7280" }}>Histórico</Text>
+
         <FlatList
           data={[...entries].reverse().slice(0, 20)}
           keyExtractor={(_, i) => i.toString()}
